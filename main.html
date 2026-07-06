@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5대 핵심 정책자금 통합 자가진단 및 비교 가이드</title>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- React & ReactDOM (Production) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel Standalone for Browser compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* Custom Scrollbar for elegant UI */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Fade-in transition helpers */
+    .fade-enter {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    .fade-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 200ms ease-out, transform 200ms ease-out;
+    }
+    
+    /* Print Styles */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .print\:hidden {
+        display: none !important;
+      }
+      .print\:p-0 {
+        padding: 0 !important;
+      }
+      .print\:shadow-none {
+        box-shadow: none !important;
+      }
+      .print\:border-slate-300 {
+        border-color: #cbd5e1 !important;
+      }
+      .print\:bg-slate-100 {
+        background-color: #f1f5f9 !important;
+      }
+      .print\:bg-white {
+        background-color: white !important;
+      }
+      .print\:text-slate-900 {
+        color: #0f172a !important;
+      }
+      .print\:text-slate-950 {
+        color: #020617 !important;
+      }
+      .print\:text-slate-600 {
+        color: #475569 !important;
+      }
+      .print\:text-slate-500 {
+        color: #64748b !important;
+      }
+      .print\:border-slate-200 {
+        border-color: #e2e8f0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50/40 text-slate-900 min-h-screen">
+  <div id="root"></div>
+
+  <!-- React Code inside type="text/babel" -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // ==========================================
+    // 1. Icon Component (Self-Contained SVGs)
+    // ==========================================
+    function Icon({ name, className = "w-5 h-5" }) {
+      const icons = {
+        Coins: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="8" cy="8" r="6" />
+            <circle cx="18" cy="18" r="4" />
+            <path d="M12 10a6 6 0 0 0-4-4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="M22 12h-2" />
+            <path d="M4 12H2" />
+          </svg>
+        ),
+        Building: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+            <line x1="9" y1="22" x2="9" y2="16" />
+            <line x1="15" y1="22" x2="15" y2="16" />
+            <line x1="9" y1="16" x2="15" y2="16" />
+            <path d="M8 6h.01" />
+            <path d="M16 6h.01" />
+            <path d="M8 10h.01" />
+            <path d="M16 10h.01" />
+          </svg>
+        ),
+        MapPin: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+        ),
+        ShieldAlert: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        ),
+        TrendingUp: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+            <polyline points="17 6 23 6 23 12" />
+          </svg>
+        ),
+        ChevronLeft: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        ),
+        ChevronRight: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        ),
+        CheckCircle2: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+        ),
+        CheckCircle: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+        ),
+        AlertTriangle: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        ),
+        Sparkles: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" />
+          </svg>
+        ),
+        CheckSquare: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 11 12 14 22 4" />
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+          </svg>
+        ),
+        Square: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          </svg>
+        ),
+        ExternalLink: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        ),
+        Printer: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+        ),
+        RefreshCw: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="23 4 23 10 17 10" />
+            <polyline points="1 20 1 14 7 14" />
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+          </svg>
+        ),
+        Layers: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+            <polygon points="2 17 12 22 22 17" />
+            <polygon points="2 12 12 17 22 12" />
+          </svg>
+        ),
+        Award: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>
+        ),
+        Clock: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        ),
+        ArrowRight: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        ),
+        FileCheck: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <polyline points="9 15 11 17 15 13" />
+          </svg>
+        ),
+        FileText: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
+        ),
+        AlertOctagon: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        ),
+        Info: (
+          <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+        )
+      };
+
+      return icons[name] || (
+        <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+      );
+    }
+
+    // ==========================================
+    // 2. Static Metadata for the 5 Actual Funds
+    // ==========================================
+    const FUNDS = {
+      GENERAL: {
+        id: 'GENERAL',
+        name: '일반경영안정자금',
+        shortName: '일반경영안정',
+        agency: '중소벤처기업진흥공단 / 소상공인시장진흥공단',
+        tagline: '경영 애로를 겪고 있는 소상공인 및 소기업의 기초 유동성 확보를 위한 범용 운전자금',
+        description: '원자재 가격 상승, 내수 부진 등 전반적인 경영 환경 저하 속에서 기업 가동을 유지하고 고용 안정과 유동성 부담을 완화해주는 대표적인 기본 공적 운전자금입니다.',
+        limit: '소상공인 최대 7,000만 원 / 중소기업 최대 5억 원 이내',
+        rate: '정책자금 기준금리 (변동금리, 현재 연 3.5% ~ 4.2% 수준)',
+        duration: '5년 이내 (거치기간 2년 포함, 매월 원금균등분할상환)',
+        target: '경영 애로를 겪고 있는 정상 가동 중인 중소기업 및 소상공인',
+        accentColor: 'bg-indigo-600',
+        textColor: 'text-indigo-700',
+        bgColor: 'bg-indigo-50/50',
+        borderColor: 'border-indigo-100',
+        bulletColor: 'bg-indigo-500',
+        webLink: 'https://www.kosmes.or.kr'
+      },
+      EMERGENCY: {
+        id: 'EMERGENCY',
+        name: '긴급경영안정자금',
+        shortName: '긴급경영안정',
+        agency: '중소벤처기업진흥공단 / 지자체 협약 금융',
+        tagline: '태풍, 화재 등 재해 피해 또는 거래처 부도 등으로 일시적 유동성 위기에 빠진 기업 긴급 구제',
+        description: '국가 또는 지자체로부터 공인된 재해 피해 확인을 받았거나, 주요 대기업/협력사 부도로 인한 일시적 영업 손실 등 객관적인 경영 애로가 입증된 위기 기업을 즉각적인 초저리 자금으로 수선 복구 지원합니다.',
+        limit: '소상공인 최대 7,000만 원 / 중소기업 최대 10억 원 이내',
+        rate: '연 1.5% ~ 2.0% 내외 (재해기업 특별 고정금리 또는 장기 초저리 우대)',
+        duration: '5년 이내 (거치기간 2년 또는 재해 시 특별 거치 추가 연장 가능)',
+        target: '재해피해사실확인증 소지 소상공인 및 일시적 위기 중소기업',
+        accentColor: 'bg-rose-600',
+        textColor: 'text-rose-700',
+        bgColor: 'bg-rose-50/50',
+        borderColor: 'border-rose-100',
+        bulletColor: 'bg-rose-500',
+        webLink: 'https://www.kosmes.or.kr'
+      },
+      REFINANCE: {
+        id: 'REFINANCE',
+        name: '소진공 대환대출',
+        shortName: '소진공 대환',
+        agency: '소상공인시장진흥공단 (SEMAS)',
+        tagline: '고금리 민간 대출의 장기 정책자금 전환을 통한 금융비용 부담 대폭 경감',
+        description: '연 7% 이상의 은행권 고금리 신용/담보 대출을 성실히 상환 중인 중·저신용 소상공인에게 장기 저금리(4%대) 공적 융자로 대환해 주어 부도 위험을 미연에 방지하는 특별 상생 금융 프로그램입니다.',
+        limit: '개인 및 법인 소상공인당 최대 5,000만 원 이내',
+        rate: '연 4.5% ~ 5.0% (고정금리 적용)',
+        duration: '최대 10년 (대환 대출 맞춤 장기 분할 원리금 균등상환)',
+        target: '연 7% 이상 고금리 대출을 보유한 중·저신용 소상공인',
+        accentColor: 'bg-amber-600',
+        textColor: 'text-amber-700',
+        bgColor: 'bg-amber-50/50',
+        borderColor: 'border-amber-100',
+        bulletColor: 'bg-amber-500',
+        webLink: 'https://www.semas.or.kr'
+      },
+      GUARANTEE: {
+        id: 'GUARANTEE',
+        name: '신용보증재단 보증서 대출',
+        shortName: '신용보증재단 보증',
+        agency: '전국 지역신용보증재단 및 협약 시중은행',
+        tagline: '부동산 담보가 부족한 영세 소기업·소상공인을 위한 공적 신용보증서 발급',
+        description: '물적 담보물이 없어 시중은행 문턱을 넘지 못하는 신용 우량 소상공인들을 위해 지방 신용보증재단이 보증서(보증비율 85%~100%)를 발급하여 1금융권 저금리 자금을 매칭 받을 수 있게 지원하는 핵심 인프라 제도입니다.',
+        limit: '업체당 최대 5,000만 원 ~ 1억 원 이내 (우수 기술력 보유 시 최대 2억 원)',
+        rate: '시중 COFIX 연동 금리 (실질 금리 4% ~ 5%대 내외, 보증료율 연 0.8% ~ 1.2% 별도)',
+        duration: '5년 (보통 1년 거치 4년 원금균등 분할상환 등)',
+        target: '신용 상태가 양호하며 담보력이 부족한 소기업 및 소상공인',
+        accentColor: 'bg-blue-600',
+        textColor: 'text-blue-700',
+        bgColor: 'bg-blue-50/50',
+        borderColor: 'border-blue-100',
+        bulletColor: 'bg-blue-500',
+        webLink: 'https://www.koreg.or.kr'
+      },
+      REGIONAL: {
+        id: 'REGIONAL',
+        name: '지역 특례 자금',
+        shortName: '지자체 특례',
+        agency: '각 지방자치단체 (시·도) 및 지역신용보증재단',
+        tagline: '지자체가 직접 이자 차액을 보전(이차보전)하여 체감 이율을 극적으로 낮추는 지역 밀착형 금융',
+        description: '각 지방자치단체(서울시, 경기도, 부산시 등)가 예산을 매칭하여 이자의 1.0%p ~ 2.5%p를 대신 납부하는 "이차보전" 제도를 융합, 고금리 시기 지역 내 자영업자의 금리 부담을 2%~3%대까지 대폭 깎아 주는 지역 상생 제도입니다.',
+        limit: '업체당 최대 3,000만 원 ~ 1억 원 이내 (지역 자치단체 조례 및 한도 잔액별 상이)',
+        rate: '실부담 연 2.0% ~ 3.5% 내외 (지자체 이차보전 금리 감면 반영 후)',
+        duration: '5년 이내 (일시상환 또는 균등분할상환 선택 가능)',
+        target: '해당 지자체 관할 구역에 본점 및 사업자등록을 완료한 소상공인',
+        accentColor: 'bg-emerald-600',
+        textColor: 'text-emerald-700',
+        bgColor: 'bg-emerald-50/50',
+        borderColor: 'border-emerald-100',
+        bulletColor: 'bg-emerald-500',
+        webLink: 'https://www.koreg.or.kr'
+      }
+    };
+
+    const EXCLUSIONS = [
+      { title: '도박 및 사행성 오락 시설', desc: '도박장, 카지노, 경마, 성인용 PC방 등 건전한 노동 유인을 침해하는 업종', examples: ['무도장', '카지노', '복권 판매업', '성인오락실'] },
+      { title: '사치 유흥 및 퇴폐 향락', desc: '단란주점, 무도유흥주점 등 사치향락 조장 유흥업 (단, 일반 음식점 성격 맥주창고 등은 지원 가능)', examples: ['단란주점', '유흥주점', '퇴폐 안마소'] },
+      { title: '부동산 투기 임대 및 개발업', desc: '부동산 단순 매매, 건물 임대업, 분양 대행업 등 불로소득 유발 업종 (건설 시공사는 지원 대상 포함)', examples: ['부동산 매매업', '비주거용 임대업', '기타 임대업'] },
+      { title: '전문 지식 고소득 대행 서비스', desc: '귀금속 고가 골동품 소매, 전문 법률 세무 대행, 금융 금융 주선 등 생산성 유발 계수가 낮은 업종', examples: ['변호사 사무실', '세무 대리업', '감정 평가업', '금융 대부업'] }
+    ];
+
+    const COMMON_DOCUMENTS = [
+      { name: '사업자등록증명원', desc: '신청 기업의 실제 업력 및 인허가 유효 상태를 확인', req: true, issuer: '국세청 홈택스 / 민원24' },
+      { name: '국세 및 지방세 납세증명서', desc: '정책 융자 지원의 절대 필수 서류 (체납 상태 시 심사 즉시 중단)', req: true, issuer: '국세청 홈택스 및 정부24' },
+      { name: '부가가치세과세표준증명원', desc: '최근 1~3개년 공식 매출 추이를 객관적으로 추적 증빙', req: true, issuer: '국세청 홈택스' },
+      { name: '소상공인 확인서', desc: '소상공인 전용 대환, 지역특례, 보증서 발급 자격을 위한 정식 증빙', req: true, issuer: '중소기업현황정보시스템 (SMINFO)' }
+    ];
+
+    const PRECAUTIONS = [
+      { title: '용도 외 사용 시 즉각 전액 회수 및 제재', content: '공적 자금은 신청서에 명시한 비즈니스 운영 목적(원자재 매입, 고용 보전, 임대료 납부, 시설 구입 등)으로만 지출해야 합니다. 만약 개인적인 채무 대환(지정되지 않은 대출), 부동산 구입, 가상자산/주식 투자 등으로 오용한 사실이 결산 감사에 적발될 경우 융자금 즉시 환수 및 향후 5년간 정책자금 지원 신청이 차단됩니다.' },
+      { title: '3자 대행 정책 브로커 전면 차단 규정', content: '정책자금 선착순 접수를 빌미로 성공 보수(3%~10%)나 수백만 원 상당의 착수금을 약속받고 사업계획서 작성을 대행 및 대리 로비를 제안하는 브로커와 접촉 시 불이익을 받습니다. 중진공 및 소진공은 공식 무료 대면 컨설팅을 상시 가동 중이며, 불법 브로커 협력 사실 적발 시 심사 즉각 취소(부결) 및 형사 처벌 대상이 됩니다.' },
+      { title: '심사 중 실시간 신용 변동 주의', content: '접수가 성공하여 실사 방문이 개시되었더라도, 실제 자금 실행(통장 입금) 당일까지 전국은행연합회 전산망을 통해 매일 세금 체납 및 금융 기관 연체 이력을 모니터링합니다. 단 하루의 이자 지연이나 단 10만 원의 지방세 세금 체납이 발견되어도 기 승인된 정책 대출이 전면 보류되므로 완벽한 신용 무결성을 지켜야 합니다.' },
+      { title: '업종 평균 부채비율 및 완전자본잠식 회피', content: '일반경영안정자금 및 신용보증재단 심사는 재무 상태의 지속 가능성을 평가합니다. 업종 평균 대비 300% 이상 과도한 부채 비율을 지녔거나 자본을 깎아 먹은 완전 자본잠식 상태인 자영업자는 융자 제한 규정에 들어가 부결될 위험이 높습니다. 단, 소진공 대환대출 및 긴급경영안정은 한계 차주 구제를 목적으로 하므로 재무 심사 기준이 대폭 완화 적용됩니다.' }
+    ];
+
+    const initialAnswers = {
+      companyScale: 'MICRO',
+      businessAge: '1_TO_3',
+      location: 'SEOUL_METRO',
+      annualSales: '100M_TO_500M',
+      salesTrend: 'STABLE',
+      hasTaxDefault: false,
+      hasCreditDelinquency: false,
+      isClosedOrSuspended: false,
+      hasHighInterestDebt: false,
+      creditScoreRange: 'MID',
+      isExcludedIndustry: false,
+      hasDisasterOrCrisis: false,
+      needCollateralSupport: true,
+      hasLocalGovRecommendation: false
+    };
+
+    // ==========================================
+    // 3. Header Component
+    // ==========================================
+    function Header({ activeTab, setActiveTab }) {
+      const tabs = [
+        { id: 'DIAGNOSIS', label: '5대 자금 통합 자가진단', icon: 'CheckCircle2' },
+        { id: 'FUNDS_INFO', label: '지원 요건 비교', icon: 'Award' },
+        { id: 'PROCESS', label: '신청 절차·서류', icon: 'FileText' },
+        { id: 'PRECAUTIONS', label: '유의 사항', icon: 'ShieldAlert' }
+      ];
+
+      return (
+        <header className="w-full bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between py-4 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-amber-400 to-amber-600 text-slate-900 rounded-xl shadow-xs shrink-0">
+                <Icon name="Coins" className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-sm text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                    소상공인·중소기업 비즈니스 지원
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono font-bold">5대 정책자금</span>
+                </div>
+                <h1 className="text-base sm:text-lg font-black tracking-tight mt-0.5 text-white">
+                  5대 핵심 정책자금 통합 자가진단 및 비교 가이드
+                </h1>
+              </div>
+            </div>
+
+            <nav className="flex flex-wrap gap-1 bg-slate-800/60 p-1 rounded-xl border border-slate-700/50">
+              {tabs.map(tab => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    id={`tab-${tab.id}`}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      isActive 
+                        ? 'bg-amber-500 text-slate-950 shadow-xs' 
+                        : 'text-slate-300 hover:text-white hover:bg-slate-750'
+                    }`}
+                  >
+                    <Icon name={tab.icon} className="w-3.5 h-3.5" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </header>
+      );
+    }
+
+    // ==========================================
+    // 4. Wizard Step Component
+    // ==========================================
+    function SelfDiagnosisWizard({ onComplete }) {
+      const [step, setStep] = useState(1);
+      const [answers, setAnswers] = useState(initialAnswers);
+      const totalSteps = 3;
+
+      const handleNext = () => {
+        if (step < totalSteps) setStep(prev => prev + 1);
+        else onComplete(answers);
+      };
+
+      const handlePrev = () => {
+        if (step > 1) setStep(prev => prev - 1);
+      };
+
+      const updateAnswer = (key, value) => {
+        setAnswers(prev => ({ ...prev, [key]: value }));
+      };
+
+      return (
+        <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm p-5 sm:p-7 space-y-6 fade-enter fade-enter-active">
+          {/* progress */}
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                {step === 1 && 'STEP 01: 기업 기본 정보 및 사업장 성격'}
+                {step === 2 && 'STEP 02: 대표자 금융 상태 및 상환 부담 요건'}
+                {step === 3 && 'STEP 03: 담보 상황 및 특별 애로 목적 검토'}
+              </span>
+              <span className="text-xs font-extrabold text-amber-600 font-mono">{step} / {totalSteps} 단계</span>
+            </div>
+            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-full bg-amber-500 transition-all duration-300" style={{ width: `${(step / totalSteps) * 100}%` }}></div>
+            </div>
+          </div>
+
+          <div className="min-h-[350px] flex flex-col justify-between">
+            {step === 1 && (
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Icon name="Building" className="w-5 h-5 text-amber-600" /> 기업 규모, 업력 및 기본 규모 파악
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">소진공 대환대출, 보증재단, 지역 특례 자금 등은 소상공인 판정 여부가 당락의 핵심 조건이 됩니다.</p>
+                </div>
+
+                {/* Q1: Company Scale */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-800 block">Q1. 귀사(또는 대표 사업장)의 기업 규모 구분은 어디에 해당합니까?</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {[
+                      { id: 'MICRO', title: '소상공인 (SOHO)', desc: '상시 근로자 5인(광업·제조·건설·운수업은 10인) 미만의 자영업자 및 영세 소기업' },
+                      { id: 'SME', title: '중기업 / 일반 중소기업', desc: '소상공인 한도를 초과하나 중소기업기본법 요건을 충족하는 정식 제조·IT·유통 법인/개인' },
+                      { id: 'LARGE', title: '대기업 / 중견기업', desc: '자본 총액 5천억 원 이상 등 대규모 상장 기업군 (공적 지원 대상에서 원칙적 제외)' },
+                      { id: 'OTHER', title: '기타 (비영리 재단/협회 등)', desc: '순수 비영리 목적 단체, 영리 매출이 부재한 임의 사설 동호 협회군' }
+                    ].map(option => (
+                      <div
+                        key={option.id}
+                        id={`scale-opt-${option.id}`}
+                        onClick={() => updateAnswer('companyScale', option.id)}
+                        className={`p-3 border rounded-xl cursor-pointer transition-all ${
+                          answers.companyScale === option.id 
+                            ? 'border-amber-500 bg-amber-50/25 shadow-2xs' 
+                            : 'border-slate-200 hover:border-slate-300 bg-slate-50/30'
+                        }`}
+                      >
+                        <h4 className="text-xs font-bold text-slate-800">{option.title}</h4>
+                        <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">{option.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Q2: Business Age & Location */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-800 block">Q2. 사업자등록증상 실제 영업 영위 및 가동 업력은?</label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {[
+                        { id: 'UNDER_1', label: '1년 미만' },
+                        { id: '1_TO_3', label: '1년 ~ 3년' },
+                        { id: 'OVER_3', label: '3년 이상' }
+                      ].map(opt => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => updateAnswer('businessAge', opt.id)}
+                          className={`py-2 px-1 text-center text-xs font-bold border rounded-lg transition-colors ${
+                            answers.businessAge === opt.id ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >{opt.label}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-800 block">Q3. 주 사업장(또는 본점) 소재지는 어디입니까?</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'SEOUL_METRO', label: '수도권 (서울/경기/인천)' },
+                        { id: 'PROVINCE', label: '지방 시·도 (수도권 외)' }
+                      ].map(opt => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => updateAnswer('location', opt.id)}
+                          className={`py-2 px-1.5 text-center text-xs font-bold border rounded-lg transition-colors flex items-center justify-center gap-1 ${
+                            answers.location === opt.id ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          <Icon name="MapPin" className="w-3 h-3 text-amber-500" />
+                          <span>{opt.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Q4: Sales Level & Trend */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-800 block">Q4. 연간 직전 총 매출 규모는 어떻게 됩니까?</label>
+                    <select
+                      id="sales-level-select"
+                      value={answers.annualSales}
+                      onChange={(e) => updateAnswer('annualSales', e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-lg border border-slate-250 bg-white"
+                    >
+                      <option value="UNDER_100M">연 매출 1억 원 미만 (영세 소상공인)</option>
+                      <option value="100M_TO_500M">연 매출 1억 원 이상 ~ 5억 원 미만</option>
+                      <option value="OVER_500M">연 매출 5억 원 이상 (성장 중소기업)</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-800 block">Q5. 최근 1개년 매출 흐름 추이는?</label>
+                    <select
+                      id="sales-trend-select"
+                      value={answers.salesTrend}
+                      onChange={(e) => updateAnswer('salesTrend', e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-lg border border-slate-250 bg-white"
+                    >
+                      <option value="INCREASING">꾸준히 상승 중 (성장형 지표)</option>
+                      <option value="STABLE">전년과 보합 또는 소폭 등락 (안정형 지표)</option>
+                      <option value="DECREASING">경기 침체로 일시적/장기적 하락세 (유동성 필요)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Icon name="ShieldAlert" className="w-5 h-5 text-rose-600" /> 세금, 신용도 및 부결/대환 필수 요건 검토
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">체납이나 대표자 금융 채무불이행 정보 등재는 5대 자금 전체에서 즉시 부결될 우려가 있는 핵심 변수입니다.</p>
+                </div>
+
+                <div className="space-y-2.5">
+                  {[
+                    { id: 'hasTaxDefault', q: 'Q6. 현재 대표자 개인 또는 법인 명의의 국세/지방세 미납 및 체납 내역이 있나요?', desc: '국세지방세 완납 증명서가 발급되지 않을 경우 5대 공적 금융 전체 신청 자격이 일시 정지됩니다.' },
+                    { id: 'hasCreditDelinquency', q: 'Q7. 현재 대표자 또는 법인이 신용불량, 금융권 대출금 연체, 또는 공공 신용 정보에 등록되어 있나요?', desc: '단기 연체 이력(5영업일 이상, 10만 원 이상)도 심사 거부 사유가 될 수 있습니다.' },
+                    { id: 'isClosedOrSuspended', q: 'Q8. 현재 주 사업장이 휴업 중이거나 폐업 정리를 진행하고 있습니까?', desc: '기본적으로 영업이 계속 유지 중(가동 중)이어야만 정책 대출 집행이 원칙입니다.' },
+                    { id: 'hasHighInterestDebt', q: 'Q9. 현재 연 7% 이상의 고금리 민간 금융 대출(카드론, 캐피탈, 저축은행 등)을 3개월 이상 성실 상환 중이신가요?', desc: '[소진공 대환대출] 자격을 통과하기 위한 결정적인 필수 필수 요건입니다.' }
+                  ].map(item => (
+                    <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 gap-3">
+                      <div className="space-y-0.5">
+                        <h4 className="text-xs font-bold text-slate-800">{item.q}</h4>
+                        <p className="text-[10px] text-slate-500 leading-relaxed">{item.desc}</p>
+                      </div>
+                      <div className="flex gap-1.5 shrink-0 self-end sm:self-center">
+                        <button
+                          id={`btn-${item.id}-yes`}
+                          type="button"
+                          onClick={() => updateAnswer(item.id, true)}
+                          className={`px-3 py-1 rounded-md text-xs font-extrabold border transition-colors ${
+                            answers[item.id] ? 'bg-rose-600 text-white border-rose-600 shadow-2xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >예</button>
+                        <button
+                          id={`btn-${item.id}-no`}
+                          type="button"
+                          onClick={() => updateAnswer(item.id, false)}
+                          className={`px-3 py-1 rounded-md text-xs font-extrabold border transition-colors ${
+                            !answers[item.id] ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >아니오</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Q10: Credit Score */}
+                <div className="space-y-2 pt-2 border-t border-slate-100">
+                  <label className="text-xs font-bold text-slate-800 block">Q10. 대표자의 대략적인 개인신용평점 범위는 어디에 속합니까? (NCB 올크레딧 기준)</label>
+                  <div className="grid grid-cols-3 gap-2.5">
+                    {[
+                      { id: 'HIGH', label: '고신용 (840점 이상)', desc: '1~3등급 상당 우량 차주 (보증재단 선호)' },
+                      { id: 'MID', label: '중신용 (710점 ~ 839점)', desc: '4~6등급 상당 보통 차주 (대환대출 대상)' },
+                      { id: 'LOW', label: '저신용 (709점 이하)', desc: '7등급 이하 금융 한계 차주 (대환대출 특별우대)' }
+                    ].map(opt => (
+                      <div
+                        key={opt.id}
+                        id={`credit-opt-${opt.id}`}
+                        onClick={() => updateAnswer('creditScoreRange', opt.id)}
+                        className={`p-2.5 border rounded-xl cursor-pointer text-center transition-all ${
+                          answers.creditScoreRange === opt.id 
+                            ? 'border-amber-500 bg-amber-50/20 shadow-2xs' 
+                            : 'border-slate-200 hover:border-slate-300'
+                        }`}
+                      >
+                        <span className="text-xs font-bold text-slate-800 block">{opt.label}</span>
+                        <span className="text-[10px] text-slate-400 mt-0.5 block">{opt.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Icon name="TrendingUp" className="w-5 h-5 text-amber-600" /> 담보 수준 및 정책자금 목적 특별 매칭 검토
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">신용보증재단 보증서 발급 필요성, 재해 확인증 구비, 지자체 추천서 유무를 통해 정밀 유착 진단을 수행합니다.</p>
+                </div>
+
+                <div className="space-y-3.5">
+                  {/* 제외업종 */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-150 gap-3">
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-slate-800">
+                        Q11. 귀사의 업종이 유흥·사행성·부동산 임대업 등 지원 제외 업종에 해당하나요?
+                      </h4>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">정책 가이드에 명시된 금지 제한 업종 리스트 해당성 여부</p>
+                    </div>
+                    <div className="flex gap-1.5 shrink-0">
+                      <button
+                        id="ex-yes"
+                        type="button"
+                        onClick={() => updateAnswer('isExcludedIndustry', true)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                          answers.isExcludedIndustry ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-slate-600 border-slate-250 hover:bg-slate-100'
+                        }`}
+                      >해당됨</button>
+                      <button
+                        id="ex-no"
+                        type="button"
+                        onClick={() => updateAnswer('isExcludedIndustry', false)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                          !answers.isExcludedIndustry ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-250 hover:bg-slate-100'
+                        }`}
+                      >해당없음</button>
+                    </div>
+                  </div>
+
+                  {/* 재해 피해 */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-150 gap-3">
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-slate-800">
+                        Q12. 자연재해(화재, 침수 등) 피해 사실확인증이 있거나 원자재가 폭등 등의 객관적 일시 위기가 증빙되나요?
+                      </h4>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">[긴급경영안정자금] 최저 고정금리 매칭을 위한 선결 요건입니다.</p>
+                    </div>
+                    <div className="flex gap-1.5 shrink-0 self-end sm:self-center">
+                      <button
+                        id="dis-yes"
+                        type="button"
+                        onClick={() => updateAnswer('hasDisasterOrCrisis', true)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                          answers.hasDisasterOrCrisis ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-slate-600 border-slate-250 hover:bg-slate-100'
+                        }`}
+                      >예</button>
+                      <button
+                        id="dis-no"
+                        type="button"
+                        onClick={() => updateAnswer('hasDisasterOrCrisis', false)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                          !answers.hasDisasterOrCrisis ? 'bg-slate-600 text-white border-slate-600' : 'bg-white text-slate-600 border-slate-250 hover:bg-slate-100'
+                        }`}
+                      >아니오</button>
+                    </div>
+                  </div>
+
+                  {/* 담보 및 보증재단 */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-150 gap-3">
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-slate-800">
+                        Q13. 현재 물적 담보가 부족하여 신용보증재단의 보증서 발급을 통해 은행 대출을 받길 원하십니까?
+                      </h4>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">[신용보증재단 보증] 및 [지역 특례 자금] 심사를 위한 핵심 가점 요인입니다.</p>
+                    </div>
+                    <div className="flex gap-1.5 shrink-0 self-end sm:self-center">
+                      <button
+                        id="collateral-yes"
+                        type="button"
+                        onClick={() => updateAnswer('needCollateralSupport', true)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                          answers.needCollateralSupport ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-slate-600 border-slate-250 hover:bg-slate-100'
+                        }`}
+                      >예</button>
+                      <button
+                        id="collateral-no"
+                        type="button"
+                        onClick={() => updateAnswer('needCollateralSupport', false)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                          !answers.needCollateralSupport ? 'bg-slate-600 text-white border-slate-600' : 'bg-white text-slate-600 border-slate-250 hover:bg-slate-100'
+                        }`}
+                      >아니오</button>
+                    </div>
+                  </div>
+
+                  {/* 지자체 추천 */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-150 gap-3">
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-bold text-slate-800">
+                        Q14. 지자체(시·군·구청)의 추천서를 받았거나 지방자치단체 소상공인 특화 우대 사업장에 속해 있나요?
+                      </h4>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">[지역 특례 자금]의 초저리 이차보전 수혜를 즉각 발휘하는 특별 연계 변수입니다.</p>
+                    </div>
+                    <div className="flex gap-1.5 shrink-0 self-end sm:self-center">
+                      <button
+                        id="gov-yes"
+                        type="button"
+                        onClick={() => updateAnswer('hasLocalGovRecommendation', true)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                          answers.hasLocalGovRecommendation ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-slate-600 border-slate-250 hover:bg-slate-100'
+                        }`}
+                      >예</button>
+                      <button
+                        id="gov-no"
+                        type="button"
+                        onClick={() => updateAnswer('hasLocalGovRecommendation', false)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                          !answers.hasLocalGovRecommendation ? 'bg-slate-600 text-white border-slate-600' : 'bg-white text-slate-600 border-slate-250 hover:bg-slate-100'
+                        }`}
+                      >아니오</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between pt-5 border-t border-slate-150 mt-5 gap-3">
+              <button
+                id="wizard-prev"
+                type="button"
+                onClick={handlePrev}
+                disabled={step === 1}
+                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                  step === 1 
+                    ? 'bg-slate-50 text-slate-300 border border-slate-100 cursor-not-allowed'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                <Icon name="ChevronLeft" className="w-3.5 h-3.5" /> 이전 단계
+              </button>
+              <button
+                id="wizard-next"
+                type="button"
+                onClick={handleNext}
+                className="flex items-center gap-1 px-5 py-2.5 text-xs font-extrabold text-slate-950 bg-amber-400 rounded-lg hover:bg-amber-500 shadow-2xs transition-all cursor-pointer"
+              >
+                {step === totalSteps ? '통합 합격도 분석' : '다음 단계'}
+                <Icon name="ChevronRight" className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 5. DiagnosisResult Component
+    // ==========================================
+    function DiagnosisResult({ answers, onReset }) {
+      const [selectedReportId, setSelectedReportId] = useState('GENERAL');
+      const [checkedDocs, setCheckedDocs] = useState({});
+
+      const evaluateAllFunds = (ans) => {
+        const results = {};
+        const ids = ['GENERAL', 'EMERGENCY', 'REFINANCE', 'GUARANTEE', 'REGIONAL'];
+
+        for (const id of ids) {
+          let score = 75; // 기준 기본점수
+          const reasons = [];
+          const warnings = [];
+          const recommendations = [];
+          let isHardFail = false;
+
+          // --- 공통 부결 결격 요건 검사 ---
+          if (ans.companyScale === 'LARGE' || ans.companyScale === 'OTHER') {
+            isHardFail = true;
+            score = 0;
+            reasons.push('중소기업 및 소상공인 지원 범위를 전면 초과하는 대기업 또는 비영리 단체 자격 미충족');
+          }
+
+          if (ans.isExcludedIndustry) {
+            isHardFail = true;
+            score = 0;
+            reasons.push('정책 융자 지원제외 부적합 사행성/유흥/투기임대 업종에 해당하여 원천 부결 대상');
+          }
+
+          if (ans.hasTaxDefault) {
+            isHardFail = true;
+            score = 0;
+            reasons.push('국세 또는 지방세 세금 체납 상태로 공적 자금 지원 결격 발생');
+            warnings.push('체납액이 소액이더라도 완납 증명서가 발급되지 않으면 신청 심사가 강제 보류 및 반려됩니다.');
+            recommendations.push('즉시 국세청 홈택스 및 관할 세무서에 체납 세금을 모두 상환하여 납세 완료 상태를 입증하십시오.');
+          }
+
+          if (ans.hasCreditDelinquency) {
+            isHardFail = true;
+            score = 0;
+            reasons.push('금융 기관 장기 연체 및 전국 신용 정보망 내 신용 불량자로 등재되어 원천 거절 대상');
+            warnings.push('공공 연체 또는 사설 이자 지연 정보가 공유되어 심사가 전면 동결됩니다.');
+            recommendations.push('연체금을 완전 변제하여 신용 회복 승인을 득하거나, 신용회복위원회의 공식 구조 제도를 통한 변제이행 실적을 증명해야 합니다.');
+          }
+
+          if (ans.isClosedOrSuspended) {
+            isHardFail = true;
+            score = 0;
+            reasons.push('현재 사업체가 일시 휴업 중이거나 최종 폐업 상태에 해당');
+            warnings.push('정책 대출은 가동 상태인 영업 주체에 실사하여 집행되는 원칙이 있어 원천 차단됩니다.');
+            recommendations.push('사업장 영업을 재개하여 가동 중 서류를 갖추어 신청하시기 바랍니다.');
+          }
+
+          // --- 공통 부결에 걸리지 않았다면 개별 맞춤 평가 ---
+          if (!isHardFail) {
+            
+            // 1. 일반경영안정자금 (GENERAL)
+            if (id === 'GENERAL') {
+              score = 70;
+              if (ans.companyScale === 'MICRO' || ans.companyScale === 'SME') {
+                score += 15;
+                reasons.push('소상공인 및 소기업 법정 자격 요건 기본 충족');
+              }
+              if (ans.businessAge === 'OVER_3' || ans.businessAge === '1_TO_3') {
+                score += 15;
+                reasons.push('가동 업력 1년 이상의 안정적 영업 기반 증명');
+              } else {
+                score -= 15;
+                warnings.push('업력 1년 미만 초기 단계: 일반 자금은 매출 기반 상환력 심사가 다소 무거워 신생 기업은 경쟁이 치열할 수 있습니다.');
+                recommendations.push('매출 원천인 부가가치세 월별 추이를 적극 소명하여 심사 역량을 보완하십시오.');
+              }
+              if (ans.annualSales === 'OVER_500M') {
+                score += 10;
+                reasons.push('안정적 상환 재원이 예측되는 연 매출 5억 이상 탄탄한 외형 확보');
+              } else if (ans.annualSales === 'UNDER_100M') {
+                score -= 10;
+                warnings.push('연 매출 1억 미만 영세 규모: 담보력이나 현금흐름 측면에서 한도 부여에 제약이 생길 수 있습니다.');
+              }
+              if (ans.salesTrend === 'INCREASING') {
+                score += 10;
+                reasons.push('매출 상승 가점으로 정책 융자 우선 배정 유리');
+              }
+            }
+
+            // 2. 긴급경영안정자금 (EMERGENCY)
+            else if (id === 'EMERGENCY') {
+              score = 35;
+              if (ans.hasDisasterOrCrisis) {
+                score += 60;
+                reasons.push('공인 재해 피해 사실 또는 객관적 원부자재 수급 위기 증빙 확인');
+              } else {
+                score -= 25;
+                warnings.push('특별 재해 및 급격한 돌발 위기 사실 부재: 일반 단순 유동성 부족은 긴급 트랙의 심사 대상이 아닙니다.');
+                recommendations.push('재해 상황이 아닌 경우 본 자금보다 범용성이 큰 [일반경영안정자금]이나 [신용보증재단 보증]을 노려야 합니다.');
+              }
+              if (ans.companyScale === 'MICRO' || ans.companyScale === 'SME') {
+                score += 10;
+              }
+              if (ans.salesTrend === 'DECREASING') {
+                score += 10;
+                reasons.push('일시적인 급격한 매출 감소로 긴급 안정 유동성 긴급 지원 대상 부합');
+              }
+            }
+
+            // 3. 소진공 대환대출 (REFINANCE)
+            else if (id === 'REFINANCE') {
+              score = 30;
+              if (ans.companyScale === 'MICRO') {
+                score += 25;
+                reasons.push('지원 기준 핵심인 소상공인(MICRO) 주체 적격 판정');
+              } else {
+                score -= 20;
+                warnings.push('소상공인 외 규모: 본 대환 대출은 오직 소상공인법상 5인 미만 차주만을 타겟으로 특별 편성되었습니다.');
+                recommendations.push('소기업 규모 이상이실 경우 보증재단의 구조조정 전환 대출 트랙을 우회 활용하셔야 합니다.');
+              }
+              
+              if (ans.hasHighInterestDebt) {
+                score += 45;
+                reasons.push('연 7% 이상의 은행권/제2금융 고금리 채무 증빙 충족');
+              } else {
+                score -= 40;
+                warnings.push('연 7% 이상 고금리 금융 대출 미보유: 본 프로그램은 높은 사채/대출 이자 부담 구제용이라 신청이 반려됩니다.');
+                recommendations.push('현재 고금리 저축은행이나 캐피탈 등의 유효 부채가 3개월 이상 성실 상환 중인지 대출원장을 정돈하세요.');
+              }
+
+              if (ans.creditScoreRange === 'LOW' || ans.creditScoreRange === 'MID') {
+                score += 15;
+                reasons.push('중·저신용 타겟층(NCB 839점 이하) 특별 우대 가점 적용');
+              } else if (ans.creditScoreRange === 'HIGH') {
+                score -= 20;
+                warnings.push('고신용자(NCB 840점 이상): 신용도가 우량하여 저금리 전환 대출의 시급성 후순위로 평가될 수 있습니다.');
+                recommendations.push('본 대환 트랙보다는 금리 보존이 되는 시중 은행 협약 [지역 특례 자금] 등이 유리합니다.');
+              }
+            }
+
+            // 4. 신용보증재단 보증 (GUARANTEE)
+            else if (id === 'GUARANTEE') {
+              score = 60;
+              if (ans.needCollateralSupport) {
+                score += 25;
+                reasons.push('담보 부족에 따른 공적 보증서(신용보증재단) 발급 당위성 완벽 소명');
+              }
+              if (ans.companyScale === 'MICRO') {
+                score += 15;
+                reasons.push('소상공인 우대 타겟 충족');
+              }
+              if (ans.creditScoreRange === 'HIGH' || ans.creditScoreRange === 'MID') {
+                score += 15;
+                reasons.push('신용도 우량 및 보상 변제 위험이 낮아 즉각 승인 등급 확보 가능');
+              } else if (ans.creditScoreRange === 'LOW') {
+                score -= 20;
+                warnings.push('대표자 저신용 등급: 신보 자체적인 내부 보증 한도가 대폭 삭감되거나 거절 판정이 날 수 있습니다.');
+                recommendations.push('저신용 특별 긴급 보증 트랙을 신청하거나 소진공의 [대환대출]을 우선 검토하는 것이 확실합니다.');
+              }
+              if (ans.annualSales === 'OVER_500M' || ans.annualSales === '100M_TO_500M') {
+                score += 10;
+                reasons.push('매출 상환 능력을 추적하는 세무 매출 증빙 우량 판정');
+              }
+            }
+
+            // 5. 지역 특례 자금 (REGIONAL)
+            else if (id === 'REGIONAL') {
+              score = 50;
+              if (ans.hasLocalGovRecommendation) {
+                score += 35;
+                reasons.push('지자체 협약 추천서 획득 및 특별 이차보전 감면 요건 완료');
+              } else {
+                score -= 10;
+                warnings.push('지자체 추천 또는 공인 협약 인증 누락: 이차보전 특별 금리 할인(1%~2.5%) 혜택이 미완성될 수 있습니다.');
+                recommendations.push('해당 구청/시청 일자리경제과 공고를 조회하여 소상공인 특례 추천 번호를 먼저 받아 제출하세요.');
+              }
+              if (ans.location === 'PROVINCE') {
+                score += 15;
+                reasons.push('지방소멸 대응 및 지역 균형 발전 지방자치단체 예산 한도 특별 우선 배정');
+              } else {
+                score += 5; // 수도권도 기본 자금 보유
+              }
+              if (ans.companyScale === 'MICRO') {
+                score += 15;
+                reasons.push('골목상권 소상공인 지역 활성화 특별 심사 요인 부합');
+              }
+            }
+          }
+
+          // 최종 스코어 보정 및 상태 세팅
+          const finalScore = Math.min(100, Math.max(0, score));
+          let status = 'ELIGIBLE';
+          if (isHardFail || finalScore < 50) {
+            status = 'INELIGIBLE';
+          } else if (finalScore < 80) {
+            status = 'SUPPLEMENT';
+          }
+
+          // 맞춤형 체크리스트
+          const checklist = [...COMMON_DOCUMENTS.map(d => d.name)];
+          if (id === 'GENERAL') checklist.push('기업 매출 소명 사업계획서', '건강보험 상시근로자수 확인원');
+          else if (id === 'EMERGENCY') checklist.push('지자체 발행 재해피해사실확인증', '소실 설비 복구 견적 소요명세서');
+          else if (id === 'REFINANCE') checklist.push('고금리 대출 금융 거래 내역원 (3개월 성실 상환용)', '원리금 균등상환 입금 통장 사본');
+          else if (id === 'GUARANTEE') checklist.push('임차계약서 사본 (사업장 실사 대비용)', '지방세 세무 납세완납증명');
+          else if (id === 'REGIONAL') checklist.push('지자체 특례 추천 승인서 사본', '지방 지역 소재 거주 사실 등본');
+
+          results[id] = {
+            fundId: id,
+            status,
+            score: finalScore,
+            reasons,
+            warnings,
+            recommendations,
+            checklist
+          };
+        }
+
+        return results;
+      };
+
+      const results = evaluateAllFunds(answers);
+
+      // 최고 점수 자금 식별
+      const sortedFunds = Object.keys(results).map(id => ({
+        id,
+        score: results[id].score,
+        status: results[id].status
+      })).sort((a, b) => b.score - a.score);
+
+      const bestMatchId = sortedFunds[0].id;
+      const bestMatch = results[bestMatchId];
+
+      useEffect(() => {
+        setSelectedReportId(bestMatchId);
+      }, [bestMatchId]);
+
+      const toggleDoc = (docName) => {
+        setCheckedDocs(prev => ({ ...prev, [docName]: !prev[docName] }));
+      };
+
+      const handlePrint = () => {
+        window.print();
+      };
+
+      const currentReport = results[selectedReportId];
+      const currentMetadata = FUNDS[selectedReportId];
+
+      return (
+        <div className="space-y-8 print:p-0 print:shadow-none fade-enter fade-enter-active">
+          
+          {/* 1. Best Match Hero Card */}
+          <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 relative overflow-hidden border border-slate-800 shadow-lg print:border-slate-300 print:bg-white print:text-slate-900">
+            <div className="absolute right-0 bottom-0 translate-y-1/5 translate-x-1/6 text-slate-800/20 pointer-events-none print:hidden">
+              <Icon name="Award" className="w-56 h-56" />
+            </div>
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="bg-amber-400 text-slate-950 text-[10px] font-black uppercase px-2.5 py-1 rounded-sm">
+                  통합 분석 최적의 자금
+                </span>
+                <span className="text-xs text-slate-300 print:text-slate-600">귀사의 기업 Profile 분석 결과 최적의 매칭 대안입니다.</span>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+                <div>
+                  <span className="text-xs text-amber-300 font-bold print:text-amber-600">{FUNDS[bestMatchId].tagline}</span>
+                  <h2 className="text-2xl sm:text-3xl font-black text-white mt-1 tracking-tight print:text-slate-950">
+                    {FUNDS[bestMatchId].name} <span className="text-amber-400 font-extrabold text-lg sm:text-xl font-mono">1순위 매칭</span>
+                  </h2>
+                </div>
+                <div className="bg-white/10 px-4 py-3 rounded-xl border border-white/10 shrink-0 flex items-center gap-3 print:bg-slate-100 print:border-slate-200">
+                  <div className="text-right">
+                    <span className="text-[10px] text-slate-300 block print:text-slate-500">매칭 지수</span>
+                    <span className="text-xl font-black text-amber-400 font-mono print:text-amber-600">{bestMatch.score} / 100점</span>
+                  </div>
+                  <div className="h-9 w-[1px] bg-white/15 print:bg-slate-300"></div>
+                  <div className="py-0.5">
+                    <span className="text-[10px] text-slate-300 block print:text-slate-500">통합 판정</span>
+                    <span className={`text-xs font-black px-2 py-0.5 rounded-sm inline-block ${
+                      bestMatch.status === 'ELIGIBLE' ? 'bg-emerald-500 text-white' :
+                      bestMatch.status === 'SUPPLEMENT' ? 'bg-amber-500 text-slate-950' :
+                      'bg-rose-500 text-white'
+                    }`}>
+                      {bestMatch.status === 'ELIGIBLE' && '적격 유력'}
+                      {bestMatch.status === 'SUPPLEMENT' && '보완 필요'}
+                      {bestMatch.status === 'INELIGIBLE' && '부격격 사유'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-400 leading-relaxed max-w-3xl border-t border-white/10 pt-4 print:text-slate-600 print:border-slate-200">
+                귀사의 가동 규모(<span className="text-white font-bold print:text-slate-950">{answers.companyScale === 'MICRO' ? '소상공인' : '중소기업'}</span>), 
+                업력(<span className="text-white font-bold print:text-slate-950">{answers.businessAge === 'UNDER_1' ? '1년 미만' : answers.businessAge === '1_TO_3' ? '1~3년' : '3년 이상'}</span>), 
+                소재지(<span className="text-white font-bold print:text-slate-950">{answers.location === 'SEOUL_METRO' ? '수도권' : '지방'}</span>) 및 신용등급에 따라 도출된 동적 정합 보고서입니다. 
+                아래 **5대 자금 비교 대시보드**에서 각 자금을 클릭하시면 상세 융자 조건과 동적 서류 체크리스트를 편하게 비교해 볼 수 있습니다.
+              </p>
+
+              <div className="flex flex-wrap gap-2 pt-2 print:hidden">
+                <button
+                  id="print-report-btn"
+                  onClick={handlePrint}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-white/10 hover:bg-white/15 text-white border border-white/15 rounded-lg transition-colors cursor-pointer"
+                >
+                  <Icon name="Printer" className="w-3.5 h-3.5" />
+                  <span>진단 소명서 인쇄 / PDF 저장</span>
+                </button>
+                <button
+                  id="reset-diagnosis-btn"
+                  onClick={onReset}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-amber-400 text-slate-950 hover:bg-amber-500 rounded-lg transition-colors cursor-pointer"
+                >
+                  <Icon name="RefreshCw" className="w-3.5 h-3.5" />
+                  <span>자가진단 다시 하기</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. 5대 자금 통합 모니터링 현황 */}
+          <div className="space-y-4 print:hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Icon name="Layers" className="w-5 h-5 text-amber-500" />
+                <h3 className="text-base font-bold text-slate-900">5대 자금별 가상 합격도 및 매칭 지수</h3>
+              </div>
+              <span className="text-[11px] text-slate-500 font-medium">※ 각 자금 카드를 클릭하시면 하단에 실시간 밀착 소명 및 구비서류 대시보드가 열립니다.</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+              {Object.keys(FUNDS).map(id => {
+                const r = results[id];
+                const m = FUNDS[id];
+                const isSelected = selectedReportId === id;
+                const isBest = bestMatchId === id;
+
+                return (
+                  <div
+                    key={id}
+                    id={`fund-card-${id}`}
+                    onClick={() => setSelectedReportId(id)}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all relative ${
+                      isSelected 
+                        ? 'border-amber-500 bg-amber-50/15 ring-2 ring-amber-400/20 shadow-sm' 
+                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 bg-white'
+                    }`}
+                  >
+                    {isBest && (
+                      <span className="absolute -top-2.5 left-3 px-2 py-0.5 bg-amber-400 text-slate-950 text-[9px] font-black rounded-sm uppercase tracking-wider shadow-2xs">
+                        최적 추천
+                      </span>
+                    )}
+                    
+                    <div className="space-y-2 pt-1">
+                      <span className="text-[10px] text-slate-400 font-bold block truncate">{m.agency}</span>
+                      <h4 className="text-xs font-black text-slate-900 truncate">{m.name}</h4>
+                      
+                      {/* Score indicator */}
+                      <div className="flex items-end justify-between pt-1">
+                        <span className="text-lg font-black text-slate-800 font-mono">{r.score}<span className="text-[10px] text-slate-400 font-normal">점</span></span>
+                        <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-sm ${
+                          r.status === 'ELIGIBLE' ? 'bg-emerald-100 text-emerald-800' :
+                          r.status === 'SUPPLEMENT' ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
+                        }`}>
+                          {r.status === 'ELIGIBLE' && '적격'}
+                          {r.status === 'SUPPLEMENT' && '보완'}
+                          {r.status === 'INELIGIBLE' && '부적격'}
+                        </span>
+                      </div>
+
+                      <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full transition-all duration-300 ${
+                            r.status === 'ELIGIBLE' ? 'bg-emerald-500' :
+                            r.status === 'SUPPLEMENT' ? 'bg-amber-500' :
+                            'bg-rose-500'
+                          }`} 
+                          style={{ width: `${r.score}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 3. Detailed Selected Report Container */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Left Column: Fund Core Conditions */}
+            <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden p-5 sm:p-6 space-y-6">
+              <div className="border-b border-slate-150 pb-4">
+                <span className="text-[10px] text-slate-400 font-bold block">{currentMetadata.agency}</span>
+                <div className="flex flex-wrap items-center justify-between gap-2 mt-1">
+                  <h3 className="text-lg font-black text-slate-900">
+                    {currentMetadata.name} <span className="font-normal text-slate-400 text-xs">상세 요건 소명서</span>
+                  </h3>
+                  <span className={`text-xs font-black px-2.5 py-1 rounded-sm inline-block ${
+                    currentReport.status === 'ELIGIBLE' ? 'bg-emerald-500 text-white' :
+                    currentReport.status === 'SUPPLEMENT' ? 'bg-amber-500 text-slate-950' :
+                    'bg-rose-500 text-white'
+                  }`}>
+                    {currentReport.status === 'ELIGIBLE' && '적격 유력 트랙'}
+                    {currentReport.status === 'SUPPLEMENT' && '보완 추천 트랙'}
+                    {currentReport.status === 'INELIGIBLE' && '부적격 한계 트랙'}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">{currentMetadata.description}</p>
+              </div>
+
+              {/* Quick Info Grid */}
+              <div className="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-150">
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-slate-400 font-bold">지원 한도</span>
+                  <p className="text-xs font-extrabold text-slate-900">{currentMetadata.limit}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-slate-400 font-bold">대출 금리</span>
+                  <p className="text-xs font-extrabold text-slate-900 text-amber-600">{currentMetadata.rate}</p>
+                </div>
+                <div className="space-y-0.5 pt-2 border-t border-slate-200/60">
+                  <span className="text-[10px] text-slate-400 font-bold">융자 기간</span>
+                  <p className="text-xs font-extrabold text-slate-900">{currentMetadata.duration}</p>
+                </div>
+                <div className="space-y-0.5 pt-2 border-t border-slate-200/60">
+                  <span className="text-[10px] text-slate-400 font-bold">지원 대상</span>
+                  <p className="text-xs font-extrabold text-slate-900 truncate">{currentMetadata.target}</p>
+                </div>
+              </div>
+
+              {/* Matching Criteria Diagnostics */}
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold text-slate-900 border-l-2 border-slate-900 pl-2">세부 적합성 판단 근거</h4>
+                
+                <div className="space-y-3">
+                  {/* Positive reasons */}
+                  {currentReport.reasons.length > 0 && (
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
+                        <Icon name="CheckCircle" className="w-3 h-3" /> 우대 및 긍정적 지표 ({currentReport.reasons.length}건)
+                      </span>
+                      <ul className="space-y-1.5 pl-4 list-disc">
+                        {currentReport.reasons.map((r, idx) => (
+                          <li key={idx} className="text-xs text-slate-600 leading-relaxed font-medium">{r}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Warnings */}
+                  {currentReport.warnings.length > 0 && (
+                    <div className="space-y-2 pt-2 border-t border-slate-100">
+                      <span className="text-[10px] font-bold text-rose-600 flex items-center gap-1">
+                        <Icon name="AlertTriangle" className="w-3.5 h-3.5" /> 불리 요소 및 주의 경보 ({currentReport.warnings.length}건)
+                      </span>
+                      <ul className="space-y-1.5 pl-4 list-disc">
+                        {currentReport.warnings.map((w, idx) => (
+                          <li key={idx} className="text-xs text-slate-600 leading-relaxed font-semibold">{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Action Recommendations */}
+                  {currentReport.recommendations.length > 0 && (
+                    <div className="p-3 bg-amber-50/30 rounded-lg border border-amber-100 space-y-1.5 mt-2">
+                      <span className="text-[10px] font-bold text-amber-700 flex items-center gap-1">
+                        <Icon name="Sparkles" className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> 감점 상쇄를 위한 최우선 권장 조치
+                      </span>
+                      <ul className="space-y-1 pl-4 list-disc">
+                        {currentReport.recommendations.map((rec, idx) => (
+                          <li key={idx} className="text-xs text-slate-700 leading-relaxed font-medium">{rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Dynamic Document Checklist */}
+            <div className="lg:col-span-5 bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-6 print:text-slate-900 print:bg-white print:border-slate-300">
+              <div>
+                <span className="text-[10px] text-amber-400 font-bold block uppercase tracking-wide">Document Matcher</span>
+                <h3 className="text-base font-black text-white mt-1 print:text-slate-950">
+                  {currentMetadata.shortName} 맞춤형 구비 서류
+                </h3>
+                <p className="text-xs text-slate-400 mt-1 print:text-slate-500">귀사의 업력 및 선택 자금에 따라 최적화된 동적 구비서류 체크리스트입니다.</p>
+              </div>
+
+              <div className="space-y-3.5">
+                {currentReport.checklist.map((doc, idx) => {
+                  const isChecked = !!checkedDocs[`${selectedReportId}-${doc}`];
+                  return (
+                    <div 
+                      key={idx} 
+                      onClick={() => toggleDoc(`${selectedReportId}-${doc}`)}
+                      className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                        isChecked 
+                          ? 'bg-slate-800/80 border-amber-400/50 text-slate-200 print:bg-slate-50 print:border-slate-300' 
+                          : 'bg-slate-800/30 border-slate-700 hover:border-slate-600 text-slate-300 print:bg-white print:border-slate-200'
+                      }`}
+                    >
+                      <div className="pt-0.5 shrink-0">
+                        {isChecked ? (
+                          <Icon name="CheckSquare" className="w-4 h-4 text-amber-400" />
+                        ) : (
+                          <Icon name="Square" className="w-4 h-4 text-slate-500" />
+                        )}
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className={`text-xs font-bold block ${isChecked ? 'line-through text-slate-500' : 'text-white print:text-slate-950'}`}>
+                          {doc}
+                        </span>
+                        <span className="text-[10px] text-slate-400 leading-relaxed block print:text-slate-500">
+                          {COMMON_DOCUMENTS.find(d => d.name === doc)?.desc || '지정 자금 트랙 검토를 위한 필수 구비 입증 서식'}
+                        </span>
+                        <span className="inline-block text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded-sm mt-1 print:bg-slate-100 print:text-slate-600">
+                          발급기관: {COMMON_DOCUMENTS.find(d => d.name === doc)?.issuer || '신청 기관 홈페이지 서식 다운로드'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="bg-slate-800/40 p-3.5 rounded-xl border border-slate-800/80 space-y-1.5 text-center print:hidden">
+                <p className="text-[11px] text-slate-400">서류 구비에 애로가 있으십니까? 공식 문의 및 사전 등록 바로가기</p>
+                <a 
+                  href={currentMetadata.webLink}
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center gap-1 text-xs font-extrabold text-amber-400 hover:text-amber-300 hover:underline transition-colors mt-1"
+                >
+                  <span>{currentMetadata.name} 온라인 접수처 바로가기</span>
+                  <Icon name="ExternalLink" className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 6. Funds Info Tab
+    // ==========================================
+    function FundsInfoTab() {
+      const [selectedDetailId, setSelectedDetailId] = useState('GENERAL');
+      
+      return (
+        <div className="space-y-6 fade-enter fade-enter-active">
+          <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm p-5 sm:p-6 space-y-6">
+            <div>
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Icon name="Award" className="w-5 h-5 text-amber-500" /> 5대 핵심 정책자금 요건 완전 비교표
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                소상공인 및 중소기업이 가장 많이 노리는 대표 정책 프로그램 5가지의 한도, 금리, 자격을 한눈에 파악하세요.
+              </p>
+            </div>
+
+            {/* Comparison Grid Table */}
+            <div className="overflow-x-auto border border-slate-150 rounded-xl">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-900 text-white text-xs font-bold font-sans">
+                    <th className="p-3.5 border-r border-slate-800">지원 사업명</th>
+                    <th className="p-3.5 border-r border-slate-800">주관 공공기관</th>
+                    <th className="p-3.5 border-r border-slate-800">최대 한도</th>
+                    <th className="p-3.5 border-r border-slate-800">실질 체감 금리</th>
+                    <th className="p-3.5 border-r border-slate-800">융자 기한</th>
+                    <th className="p-3.5">주요 핵심 자격</th>
+                  </tr>
+                </thead>
+                <tbody className="text-xs divide-y divide-slate-150">
+                  {Object.keys(FUNDS).map(id => {
+                    const f = FUNDS[id];
+                    return (
+                      <tr 
+                        key={id} 
+                        onClick={() => setSelectedDetailId(id)}
+                        className={`hover:bg-slate-50/80 cursor-pointer transition-all ${
+                          selectedDetailId === id ? 'bg-amber-50/20 font-medium' : ''
+                        }`}
+                      >
+                        <td className="p-3.5 font-bold text-slate-900 border-r border-slate-150">{f.name}</td>
+                        <td className="p-3.5 text-slate-600 border-r border-slate-150">{f.agency}</td>
+                        <td className="p-3.5 font-extrabold text-indigo-700 border-r border-slate-150">{f.limit}</td>
+                        <td className="p-3.5 font-extrabold text-amber-600 border-r border-slate-150">{f.rate}</td>
+                        <td className="p-3.5 text-slate-600 border-r border-slate-150">{f.duration}</td>
+                        <td className="p-3.5 text-slate-500 leading-relaxed">{f.tagline}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Selected Fund Detail Bento Box */}
+          <div className="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div className="md:col-span-5 space-y-3">
+              <span className="text-[10px] text-amber-400 font-black tracking-wide uppercase">Core Intelligence Card</span>
+              <h4 className="text-xl font-black text-white">{FUNDS[selectedDetailId].name}</h4>
+              <p className="text-xs text-slate-400 leading-relaxed">{FUNDS[selectedDetailId].description}</p>
+              <div className="pt-2">
+                <a 
+                  href={FUNDS[selectedDetailId].webLink}
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 hover:underline"
+                >
+                  <span>해당 지원사업 공식 접수처 열기</span>
+                  <Icon name="ExternalLink" className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
+            <div className="md:col-span-7 bg-slate-800/50 rounded-xl p-4 border border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-400 font-bold">융자 한도 성격</span>
+                <p className="text-xs font-bold text-slate-200">{FUNDS[selectedDetailId].limit}</p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-400 font-bold">이자 지출 구조</span>
+                <p className="text-xs font-bold text-amber-400">{FUNDS[selectedDetailId].rate}</p>
+              </div>
+              <div className="space-y-1 pt-2 border-t border-slate-750">
+                <span className="text-[10px] text-slate-400 font-bold">거치 기간 조건</span>
+                <p className="text-xs font-bold text-slate-200">{FUNDS[selectedDetailId].duration}</p>
+              </div>
+              <div className="space-y-1 pt-2 border-t border-slate-750">
+                <span className="text-[10px] text-slate-400 font-bold">주무 부서 및 대외 관계</span>
+                <p className="text-xs font-bold text-slate-200">{FUNDS[selectedDetailId].agency}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Target Industry Exclusion details */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm p-5 sm:p-6 space-y-4">
+            <div>
+              <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Icon name="AlertOctagon" className="w-4 h-4 text-rose-500" /> 공통 융자 제외 (지원 불가능) 세부 부적합 업종
+              </h4>
+              <p className="text-xs text-slate-500 mt-1">아래의 산업군을 주요 매출 원천으로 삼는 기업은 5대 정책자금 및 보증 지원에서 자동 거부 대상입니다.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3.5">
+              {EXCLUSIONS.map((ex, idx) => (
+                <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-150 space-y-2">
+                  <h5 className="text-xs font-bold text-rose-700">{ex.title}</h5>
+                  <p className="text-[10px] text-slate-500 leading-relaxed">{ex.desc}</p>
+                  <div className="flex flex-wrap gap-1 pt-1 border-t border-slate-200/60">
+                    {ex.examples.map((item, i) => (
+                      <span key={i} className="text-[9px] bg-slate-200/60 text-slate-600 px-1.5 py-0.5 rounded-sm">{item}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 7. Process Tab Component
+    // ==========================================
+    function ProcessTab() {
+      const steps = [
+        {
+          step: '01',
+          title: '온라인 사전 자가 진단 및 회원 가입',
+          desc: '해당 기관(중진공, 소진공, 지역신보 등)의 공식 웹포털에 접속하여 간이 회원가입 및 본인인증(공동인증서 준비)을 수행합니다.'
+        },
+        {
+          step: '02',
+          title: '비대면 신청 접수 예약 및 서류 자동 제출',
+          desc: '매월 공고되는 선착순 또는 심사제 접수 창구에서 상담 예약을 수행합니다. 스크래핑 엔진을 통해 기본 국세완납, 지방세완납, 매출서류가 자동 업로드됩니다.'
+        },
+        {
+          step: '03',
+          title: '온라인 사업계획서 접수 및 기본 심사',
+          desc: '자금 목적(운전자금, 시설자금, 대환 대출용 부채대장 등)에 부합하는 소명서 및 양식 사업계획서를 작성하여 첨부 접수합니다.'
+        },
+        {
+          step: '04',
+          title: '기술/현장 평가 및 실사 실무 검토',
+          desc: '기관의 실무 평가관이 기업 사업장에 실제 방문하여 상시근로자수, 시제품 작동 여부, 가동 가치성, 신용도를 점검하는 본 심사를 진행합니다.'
+        },
+        {
+          step: '05',
+          title: '융자 결정 통보 및 보증서/자금 집행',
+          desc: '최종 이사회 통과 시 융자 한도액 및 우대 금리가 결정되어 대출 약정(전자 서명) 체결 후 원금 입금 또는 보증서가 시중은행에 직송 실행됩니다.'
+        }
+      ];
+
+      return (
+        <div className="space-y-6 fade-enter fade-enter-active">
+          <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm p-5 sm:p-6 space-y-6">
+            <div>
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Icon name="Clock" className="w-5 h-5 text-amber-500" /> 정책자금 실무 신청 및 처리 5단계 절차
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">접수 예약 개시부터 통장 입금까지 평균 3주 ~ 6주가 소요되므로 일정을 고려하여 미리 서류를 정비하세요.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 relative">
+              {steps.map((s, idx) => (
+                <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-150 space-y-2.5 relative group">
+                  <span className="text-2xl font-black text-amber-400 font-mono block">{s.step}</span>
+                  <h4 className="text-xs font-bold text-slate-900 leading-tight">{s.title}</h4>
+                  <p className="text-[10px] text-slate-500 leading-relaxed">{s.desc}</p>
+                  
+                  {idx < steps.length - 1 && (
+                    <div className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 z-10">
+                      <Icon name="ArrowRight" className="w-4 h-4 text-slate-300" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Required Common Documents Board */}
+          <div className="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 space-y-4">
+            <div>
+              <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+                <Icon name="FileCheck" className="w-4 h-4 text-amber-400" /> 융자 심사 시 공통 필수 제출 서류 (상시 구비)
+              </h3>
+              <p className="text-xs text-slate-400 mt-1">체납이나 불성실 증빙 제출 시 즉시 기각되므로 신청 예약일 전 발급 일자를 확인하십시오.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              {COMMON_DOCUMENTS.map((doc, idx) => (
+                <div key={idx} className="p-3.5 bg-slate-800/40 rounded-xl border border-slate-800 space-y-1.5">
+                  <span className="inline-block text-[9px] font-bold bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded-sm">필수 제출</span>
+                  <h4 className="text-xs font-bold text-slate-100">{doc.name}</h4>
+                  <p className="text-[10px] text-slate-400 leading-relaxed">{doc.desc}</p>
+                  <span className="block text-[9px] text-slate-500 pt-1">공식 발급처: {doc.issuer}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 8. Precautions Tab Component
+    // ==========================================
+    function PrecautionsTab() {
+      return (
+        <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm p-5 sm:p-6 space-y-6 fade-enter fade-enter-active">
+          <div>
+            <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+              <Icon name="ShieldAlert" className="w-5 h-5 text-rose-500" /> 정책자금 유치 시 반드시 지켜야 할 주요 유의 사항
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">정책자금은 한정된 국가 공적 예산으로 집행되므로 강력한 제재 조항과 무결성 기준을 동시 준수해야 합니다.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {PRECAUTIONS.map((item, idx) => (
+              <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-150 space-y-2">
+                <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <Icon name="AlertTriangle" className="w-4 h-4 text-amber-500" /> {item.title}
+                </h4>
+                <p className="text-[11px] text-slate-500 leading-relaxed">{item.content}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-4 bg-rose-50/50 rounded-xl border border-rose-100/80 space-y-2">
+            <h4 className="text-xs font-bold text-rose-800 flex items-center gap-1.5">
+              <Icon name="AlertOctagon" className="w-4 h-4 text-rose-500" /> 불법 상담 수수료 대리 청구 신고 안내
+            </h4>
+            <p className="text-xs text-rose-700 leading-relaxed">
+              어떠한 공식 대행사도 중소벤처기업진흥공단, 소상공인시장진흥공단의 융자 심사 통과를 보장할 권한이 없습니다. 
+              컨설팅 수수료로 성공 사례비의 비율을 현금이나 기계 매입 이면 계약으로 정수하는 자는 전면 적발되어 처벌되며, 
+              관련 의심 사례를 발견 즉시 **중소벤처기업부 불법 브로커 신고 센터** 또는 전용 콜센터로 즉각 고발하십시오.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 9. Main App Component
+    // ==========================================
+    function App() {
+      const [activeTab, setActiveTab] = useState('DIAGNOSIS');
+      const [diagnosisAnswers, setDiagnosisAnswers] = useState(null);
+
+      const handleWizardComplete = (answers) => {
+        setDiagnosisAnswers(answers);
+      };
+
+      const handleReset = () => {
+        setDiagnosisAnswers(null);
+      };
+
+      return (
+        <div className="min-h-screen bg-slate-50/40 text-slate-900 flex flex-col font-sans">
+          <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            
+            {/* Banner Alert Section */}
+            <div className="mb-6 p-4 bg-amber-50/30 rounded-2xl border border-amber-100/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-400 text-slate-950 rounded-lg shrink-0 mt-0.5">
+                  <Icon name="Info" className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] bg-amber-400/20 text-amber-700 font-extrabold px-1.5 py-0.2 rounded-sm uppercase tracking-wide">NOTICE</span>
+                  <p className="text-xs font-semibold text-slate-800 mt-1 leading-relaxed">
+                    본 진단 시스템은 중소벤처기업진흥공단, 소상공인시장진흥공단, 전국지역신용보증재단의 공식 융자 세칙 및 심사 기준을 반영하여 실시간 분석을 모의 진행합니다.
+                  </p>
+                </div>
+              </div>
+              <div className="shrink-0 flex items-center gap-1.5 text-xs font-black text-slate-500">
+                <Icon name="Clock" className="w-3.5 h-3.5" />
+                <span>최종 업데이트: 2026년 7월</span>
+              </div>
+            </div>
+
+            {/* Tab Contents */}
+            <div className="space-y-6">
+              {activeTab === 'DIAGNOSIS' && (
+                <div className="space-y-6">
+                  {!diagnosisAnswers ? (
+                    <div className="space-y-6">
+                      <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 relative overflow-hidden border border-slate-800 shadow-md">
+                        <div className="relative z-10 space-y-3 max-w-3xl">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950">
+                            OFFLINE-FIRST SIMULATION
+                          </span>
+                          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                            5대 자금 통합 실시간 자가진단 엔진
+                          </h2>
+                          <p className="text-xs text-slate-400 leading-relaxed">
+                            개별적으로 쪼개져 있는 **일반경영안정자금, 긴급경영안정자금, 소진공 대환대출, 신용보증재단 보증, 지역 특례 자금** 5가지 공적 자금을 
+                            단 한 번의 통합 설문으로 완벽 비교 매칭합니다. 세무/재무 결격부터 우대 가점, 동적 구비서류 체크리스트까지 1분 만에 분석해 드립니다.
+                          </p>
+                        </div>
+                      </div>
+
+                      <SelfDiagnosisWizard onComplete={handleWizardComplete} />
+                    </div>
+                  ) : (
+                    <DiagnosisResult answers={diagnosisAnswers} onReset={handleReset} />
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'FUNDS_INFO' && <FundsInfoTab />}
+
+              {activeTab === 'PROCESS' && <ProcessTab />}
+
+              {activeTab === 'PRECAUTIONS' && <PrecautionsTab />}
+            </div>
+          </main>
+
+          <footer className="w-full bg-slate-900 text-slate-400 text-center py-6 border-t border-slate-800 mt-12 print:hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1.5">
+              <p className="text-[11px] font-bold text-slate-300">중소기업 및 자영업자 상생 정책자금 통합 자가진단 플랫폼</p>
+              <p className="text-[10px] leading-relaxed max-w-2xl mx-auto text-slate-500">
+                본 서비스는 금융 상담 편의를 위해 모의 정보에 기초해 작성되었으며, 실제 대출 승인 및 예산 잔액은 각 산하 기관(중소벤처기업진흥공단, 소상공인시장진흥공단, 신용보증재단)의 최종 심사 결과에 따라 달라집니다.
+              </p>
+              <p className="text-[9px] text-slate-600 font-mono pt-2">© 2026 KOSMES-SEMAS Unified Guidance. All Rights Reserved.</p>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    // Render the React App
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
